@@ -1,3 +1,20 @@
+# Time series forecasting using Deep Neural Net models
+- Data set: E-commerce sales
+- Code: notebooks/v1.ipynb
+- Single and Multi step
+
+## Applying
+- Baseline
+- Linear Model
+- Deep Dense Neural Network
+- Convolution Neural Network
+- Recurrent Neural Network
+
+## Evaluation
+- Comparing models on Validation and Test Mean Absolute Error (MAE)
+
+
+# Prerequisite
 - pip install jupyter
 - pip install numpy pandas matplotlib seaborn
 - conda install geopandas
