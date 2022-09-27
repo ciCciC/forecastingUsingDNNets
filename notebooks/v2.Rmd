@@ -1,0 +1,108 @@
+---
+title: "Applying Prophet for time series forecasting"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# cmd + shift + m
+```
+
+
+
+```{r prophetInstaller}
+install.packages('prophet')
+```
+
+
+
+```{r}
+library(prophet)
+library(ggplot2)
+library(tibble)
+library(tidyverse)
+```
+
+
+```{r}
+?prophet
+?fit.prophet
+```
+
+
+
+```{r}
+df = read.csv('./data/example_retail_sales.csv')
+```
+
+
+```{r}
+df %>% head()
+```
+
+
+```{r}
+z_scores <- abs((df$y-mean(df$y))/sd(df$y))
+plot(z_scores, type="o", col="red")
+```
+
+
+```{r}
+no_outliers = df[z_scores < 3]
+length(df$y) - length(no_outliers)
+```
+
+
+```{r}
+df %>% mutate(response=y, day=as.Date(ds)) %>% ggplot(aes(x=day, y=response)) + geom_line()
+```
+
+
+```{r}
+m = prophet(df)
+future = make_future_dataframe(m, periods=100)
+```
+
+
+```{r}
+future %>% tail()
+```
+
+```{r}
+forecast = predict(m, future)
+tail(forecast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')])
+```
+
+
+```{r}
+plot(m, forecast)
+```
+
+
+```{r}
+prophet_plot_components(m, forecast)
+```
+
+
+### Interactive graph
+```{r}
+dyplot.prophet(m, forecast)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
