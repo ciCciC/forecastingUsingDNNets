@@ -8,7 +8,9 @@
 - Linear Model
 - Deep Dense Neural Network
 - Convolution Neural Network
-- Recurrent Neural Network
+- Recurrent Neural Network with Long-Short Term Memory (RNN-LSTM)
+- Prophet (Meta)
+- Neural Prophet
 
 ## Evaluation
 - Comparing models on Validation and Test Mean Absolute Error (MAE)
