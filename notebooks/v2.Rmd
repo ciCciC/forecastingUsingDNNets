@@ -32,7 +32,7 @@ library(tidyverse)
 
 
 ```{r}
-df = read.csv('./data/example_retail_sales.csv')
+df = read_csv('../data/example_retail_sales.csv')
 ```
 
 
@@ -42,25 +42,31 @@ df %>% head()
 
 
 ```{r}
+?plot
 z_scores <- abs((df$y-mean(df$y))/sd(df$y))
-plot(z_scores, type="o", col="red")
+plot(z_scores, type="o", col="red", main='Z Score')
 ```
 
 
 ```{r}
-no_outliers = df[z_scores < 3]
+no_outliers = df$y[z_scores < 3]
 length(df$y) - length(no_outliers)
 ```
 
 
 ```{r}
-df %>% mutate(response=y, day=as.Date(ds)) %>% ggplot(aes(x=day, y=response)) + geom_line()
+
+df %>% 
+  mutate(response=y, day=as.Date(ds)) %>% 
+  ggplot(aes(x=day, y=response)) + 
+    geom_line(aes(color=response))
 ```
 
 
 ```{r}
-m = prophet(df)
-future = make_future_dataframe(m, periods=100)
+?prophet
+m = prophet(df, daily.seasonality = F, growth = 'linear')
+future = make_future_dataframe(m, periods=365)
 ```
 
 
@@ -75,7 +81,7 @@ tail(forecast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')])
 
 
 ```{r}
-plot(m, forecast)
+plot(m, forecast) + add_changepoints_to_plot(m)
 ```
 
 
