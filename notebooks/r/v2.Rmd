@@ -1,6 +1,7 @@
 ---
 title: "Applying Prophet for time series forecasting"
 output: github_document
+always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
@@ -8,30 +9,28 @@ knitr::opts_chunk$set(echo = TRUE)
 # cmd + shift + m
 ```
 
-# Sub-daily time series forecasting
 
 ```{r prophetInstaller}
-install.packages('prophet')
+#install.packages('prophet')
 ```
 
 ## Dependencies
 
 ```{r}
 library(prophet)
-library(ggplot2)
-library(tibble)
-library(tidyverse)
 library(lubridate)
+library(tidyverse)
 ```
 
+# Sub-daily time series forecasting
 ## Loading data
 
 ```{r}
-df_raw = read_csv('../data/e_commerce_uk.csv')
+df_raw = read_csv('../../data/e_commerce_uk.csv')
 ```
 
 
-Applying Prophet to make forecasts for time series with sub-daily observations
+## Data mutation to have appropiate structure
 
 ```{r}
 # %Y-%m-%d %H:%M:%S
@@ -87,11 +86,7 @@ df %>%
 ```
 
 
-```{r}
-?prophet
-?make_future_dataframe
-```
-
+## Model creation
 
 ```{r}
 m = prophet(df, changepoint.prior.scale = 0.01)
@@ -105,26 +100,26 @@ plot(m, forecast)
 
 
 
-
 ```{r}
-?prophet_plot_components
 prophet_plot_components(m, forecast)
 ```
 
 
-### Interactive graph
+## Interactive graph
 ```{r}
 dyplot.prophet(m, forecast)
 ```
 
 # Monthly time series forecasting
 
+## Loading data
+
 ```{r}
-df_raw = read_csv('../data/example_retail_sales.csv')
+df_raw = read_csv('../../data/example_retail_sales.csv')
 df_raw %>% head()
 ```
 
-## Model
+## Model creation
 
 ```{r}
 m = prophet(df_raw, seasonality.mode = 'multiplicative')
@@ -138,6 +133,7 @@ plot(m, forecast)
 ```
 
 
+## Interactive graph
 ```{r}
 dyplot.prophet(m, forecast)
 ```
