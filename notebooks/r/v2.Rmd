@@ -44,7 +44,6 @@ df_mutated %>% head()
 ## Detecting outliers using Z-score
 
 ```{r}
-?plot
 z_scores <- abs((df_mutated$y-mean(df_mutated$y))/sd(df_mutated$y))
 ```
 

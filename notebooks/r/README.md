@@ -102,19 +102,6 @@ df_mutated %>% head()
 ## Detecting outliers using Z-score
 
 ``` r
-?plot
-```
-
-    ## Help on topic 'plot' was found in the following packages:
-    ## 
-    ##   Package               Library
-    ##   graphics              /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
-    ##   base                  /Library/Frameworks/R.framework/Resources/library
-    ## 
-    ## 
-    ## Using the first match ...
-
-``` r
 z_scores <- abs((df_mutated$y-mean(df_mutated$y))/sd(df_mutated$y))
 ```
 
@@ -175,12 +162,12 @@ tail(forecast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')])
 ```
 
     ##                       ds       yhat yhat_lower yhat_upper
-    ## 6555 2011-12-21 19:50:00   193.0210  -1197.904  1519.2096
-    ## 6556 2011-12-21 20:50:00  -732.5828  -2184.628   619.1318
-    ## 6557 2011-12-21 21:50:00 -2085.8353  -3468.282  -805.8146
-    ## 6558 2011-12-21 22:50:00 -3187.1641  -4524.714 -1699.3767
-    ## 6559 2011-12-21 23:50:00 -3188.7353  -4656.044 -1798.9209
-    ## 6560 2011-12-22 00:50:00 -1706.5524  -3053.410  -302.3190
+    ## 6555 2011-12-21 19:50:00   193.0210  -1188.088  1487.7184
+    ## 6556 2011-12-21 20:50:00  -732.5828  -2086.514   676.6876
+    ## 6557 2011-12-21 21:50:00 -2085.8353  -3610.898  -837.7552
+    ## 6558 2011-12-21 22:50:00 -3187.1641  -4609.300 -1801.7461
+    ## 6559 2011-12-21 23:50:00 -3188.7353  -4520.145 -1878.9680
+    ## 6560 2011-12-22 00:50:00 -1706.5524  -3067.515  -275.2703
 
 ``` r
 plot(m, forecast)
