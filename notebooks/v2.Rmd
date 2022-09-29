@@ -8,84 +8,106 @@ knitr::opts_chunk$set(echo = TRUE)
 # cmd + shift + m
 ```
 
-
+# Sub-daily time series forecasting
 
 ```{r prophetInstaller}
 install.packages('prophet')
 ```
 
-
+## Dependencies
 
 ```{r}
 library(prophet)
 library(ggplot2)
 library(tibble)
 library(tidyverse)
+library(lubridate)
 ```
 
+## Loading data
 
 ```{r}
-?prophet
-?fit.prophet
+df_raw = read_csv('../data/e_commerce_uk.csv')
 ```
 
 
+Applying Prophet to make forecasts for time series with sub-daily observations
 
 ```{r}
-df = read_csv('../data/example_retail_sales.csv')
+# %Y-%m-%d %H:%M:%S
+
+df_mutated = df_raw %>% mutate(y = Quantity * UnitPrice, InvoiceDate=mdy_hm(InvoiceDate)) %>% select(InvoiceDate, y)
+
+df_mutated = df_mutated %>% rename(ds=InvoiceDate)
+df_mutated %>% head()
 ```
 
-
-```{r}
-df %>% head()
-```
-
+## Detecting outliers using Z-score
 
 ```{r}
 ?plot
-z_scores <- abs((df$y-mean(df$y))/sd(df$y))
-plot(z_scores, type="o", col="red", main='Z Score')
+z_scores <- abs((df_mutated$y-mean(df_mutated$y))/sd(df_mutated$y))
 ```
 
 
 ```{r}
-no_outliers = df$y[z_scores < 3]
-length(df$y) - length(no_outliers)
+no_outliers = z_scores < 3
+
+df = df_mutated %>% filter(no_outliers)
+length(df_mutated$y) - length(df$y)
+```
+
+## Subsetting dataframe to analyse observations starting from 2011-10
+
+```{r}
+slice = ymd_hm('2011-10-01 00:00')
+
+df = df %>% 
+  filter(ds > slice) %>% 
+  mutate(h = strptime(ds, '%Y-%m-%d %H:%M')) %>% 
+  select(h, y) %>% 
+  group_by(h) %>% 
+  summarise(y = sum(y)) %>% 
+  mutate(h = as.character(h)) %>% 
+  rename(ds = h)
+
+nrow(df)
 ```
 
 
-```{r}
+## General sales
 
+```{r}
 df %>% 
-  mutate(response=y, day=as.Date(ds)) %>% 
+  mutate(response=y, day=ymd_hms(ds)) %>% 
   ggplot(aes(x=day, y=response)) + 
-    geom_line(aes(color=response))
+  geom_line(aes(color=response)) + 
+  labs(title='General Sales', x='Date', y='Sale', color='Sale') +
+  theme_minimal()
 ```
 
 
 ```{r}
 ?prophet
-m = prophet(df, daily.seasonality = F, growth = 'linear')
-future = make_future_dataframe(m, periods=365)
+?make_future_dataframe
 ```
 
 
 ```{r}
-future %>% tail()
-```
+m = prophet(df, changepoint.prior.scale = 0.01)
 
-```{r}
+future = make_future_dataframe(m, periods=300, freq = 60*60)
+
 forecast = predict(m, future)
 tail(forecast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')])
+plot(m, forecast)
 ```
 
 
-```{r}
-plot(m, forecast) + add_changepoints_to_plot(m)
-```
 
 
 ```{r}
+?prophet_plot_components
 prophet_plot_components(m, forecast)
 ```
 
@@ -95,11 +117,30 @@ prophet_plot_components(m, forecast)
 dyplot.prophet(m, forecast)
 ```
 
+# Monthly time series forecasting
+
+```{r}
+df_raw = read_csv('../data/example_retail_sales.csv')
+df_raw %>% head()
+```
+
+## Model
+
+```{r}
+m = prophet(df_raw, seasonality.mode = 'multiplicative')
+
+n_10_years = 3652
+future = make_future_dataframe(m, periods=n_10_years)
+
+forecast = predict(m, future)
+
+plot(m, forecast)
+```
 
 
-
-
-
+```{r}
+dyplot.prophet(m, forecast)
+```
 
 
 
