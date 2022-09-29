@@ -107,7 +107,7 @@ prophet_plot_components(m, forecast)
 
 ## Interactive graph
 ```{r}
-dyplot.prophet(m, forecast)
+#dyplot.prophet(m, forecast)
 ```
 
 # Monthly time series forecasting
@@ -135,7 +135,7 @@ plot(m, forecast)
 
 ## Interactive graph
 ```{r}
-dyplot.prophet(m, forecast)
+#dyplot.prophet(m, forecast)
 ```
 
 
