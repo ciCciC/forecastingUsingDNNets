@@ -1,19 +1,24 @@
 # Time series forecasting using Deep Neural Net models
-- Data set: E-commerce sales
-- Code: notebooks/v1.ipynb
-- Single and Multi step
 
-## Applying
-- Baseline
-- Linear Model
-- Deep Dense Neural Network
-- Convolution Neural Network
-- Recurrent Neural Network with Long-Short Term Memory (RNN-LSTM)
-- Prophet (Meta)
-- Neural Prophet
+
+## Data set
+- E-commerce sales
+- Retail sales
+
+
+## Code
+- [Complex models](https://github.com/ciCciC/forecastingEcommerceSales/blob/main/notebooks/complex_models.ipynb)
+  - Baseline
+  - Linear Model
+  - Deep Dense Neural Network
+  - Convolution Neural Network
+  - Recurrent Neural Network with Long-Short Term Memory (RNN-LSTM)
+- [Prophet (Meta)](https://github.com/ciCciC/forecastingEcommerceSales/blob/main/notebooks/r/v2.Rmd)
+- [Neural Prophet](https://github.com/ciCciC/forecastingEcommerceSales/blob/main/notebooks/neural_prophet.ipynb)
+
 
 ## Evaluation
-- Comparing models on Validation and Test Mean Absolute Error (MAE)
+Comparing models on Validation and Test Mean Absolute Error (MAE), [result](https://github.com/ciCciC/forecastingEcommerceSales/blob/main/notebooks/comparison.png)
 
 
 # Prerequisite
