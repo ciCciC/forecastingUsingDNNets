@@ -21,5 +21,7 @@
 - pip install numpy pandas matplotlib seaborn
 - conda install geopandas
 - pip install scikit-learn
+- conda install prophet
+- pip install neuralprophet
 
 - Tensorflow M1 -> https://developer.apple.com/metal/tensorflow-plugin
