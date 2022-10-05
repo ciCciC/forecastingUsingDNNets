@@ -1,24 +1,20 @@
 # Time series forecasting using Deep Neural Net models
 
 
-## Data set
-- E-commerce sales
-- Retail sales
-
-
 ## Code
 - [Complex models](https://github.com/ciCciC/forecastingEcommerceSales/blob/main/notebooks/complex_models_energy.ipynb)
-  - Baseline
-  - Linear Model
-  - Deep Dense Neural Network
-  - Convolution Neural Network
-  - Recurrent Neural Network with Long-Short Term Memory (RNN-LSTM)
+  - Data:
+    - [American Energy Power (Hourly Energy Consumption Data)](https://www.kaggle.com/datasets/robikscube/hourly-energy-consumption?resource=download&select=AEP_hourly.csv)
+  - Models:
+    - Baseline
+    - Linear Model
+    - Deep Dense Neural Network
+    - Convolution Neural Network
+    - Recurrent Neural Network with Long-Short Term Memory (RNN-LSTM)
+  - Evaluation
+    - [Validation and Test Mean Absolute Error (MAE)](https://github.com/ciCciC/forecastingEcommerceSales/blob/main/notebooks/comparison.png)
 - [Prophet (Meta)](https://github.com/ciCciC/forecastingEcommerceSales/blob/main/notebooks/r/v2.Rmd)
 - [Neural Prophet](https://github.com/ciCciC/forecastingEcommerceSales/blob/main/notebooks/neural_prophet.ipynb)
-
-
-## Evaluation
-Comparing models on Validation and Test Mean Absolute Error (MAE), [result](https://github.com/ciCciC/forecastingEcommerceSales/blob/main/notebooks/comparison.png)
 
 
 # Prerequisite
