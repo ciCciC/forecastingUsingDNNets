@@ -7,7 +7,7 @@
 
 
 ## Code
-- [Complex models](https://github.com/ciCciC/forecastingEcommerceSales/blob/main/notebooks/complex_models.ipynb)
+- [Complex models](https://github.com/ciCciC/forecastingEcommerceSales/blob/main/notebooks/complex_models_energy.ipynb)
   - Baseline
   - Linear Model
   - Deep Dense Neural Network
