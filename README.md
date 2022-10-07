@@ -2,7 +2,7 @@
 
 
 ## Code
-- [Complex models](https://github.com/ciCciC/forecastingEcommerceSales/blob/main/notebooks/complex_models_energy.ipynb)
+- [Complex models](https://github.com/ciCciC/forecastingUsingDNNets/blob/main/notebooks/complex_models_energy.ipynb)
   - Data:
     - [American Energy Power (Hourly Energy Consumption Data)](https://www.kaggle.com/datasets/robikscube/hourly-energy-consumption?resource=download&select=AEP_hourly.csv)
   - Models:
@@ -12,9 +12,9 @@
     - Convolution Neural Network
     - Recurrent Neural Network with Long-Short Term Memory (RNN-LSTM)
   - Evaluation
-    - [Validation and Test Mean Absolute Error (MAE)](https://github.com/ciCciC/forecastingEcommerceSales/blob/main/notebooks/comparison.png)
-- [Prophet (Meta)](https://github.com/ciCciC/forecastingEcommerceSales/blob/main/notebooks/r/v2.Rmd)
-- [Neural Prophet](https://github.com/ciCciC/forecastingEcommerceSales/blob/main/notebooks/neural_prophet.ipynb)
+    - [Validation and Test Mean Absolute Error (MAE)](https://github.com/ciCciC/forecastingUsingDNNets/blob/main/notebooks/comparison.png)
+- [Prophet (Meta)](https://github.com/ciCciC/forecastingUsingDNNets/blob/main/notebooks/r/v2.Rmd)
+- [Neural Prophet](https://github.com/ciCciC/forecastingUsingDNNets/blob/main/notebooks/neural_prophet.ipynb)
 
 
 # Prerequisite
