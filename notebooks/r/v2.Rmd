@@ -1,5 +1,5 @@
 ---
-title: "Applying Prophet for time series forecasting"
+title: "Applying Prophet for time series forecasting for Energy Consumption"
 output: github_document
 always_allow_html: true
 ---
@@ -26,115 +26,271 @@ library(tidyverse)
 ## Loading data
 
 ```{r}
-df_raw = read_csv('../../data/e_commerce_uk.csv')
+df_raw = read_csv('../../data/AEP_hourly.csv')
 ```
-
-
-## Data mutation to have appropiate structure
 
 ```{r}
-# %Y-%m-%d %H:%M:%S
-
-df_mutated = df_raw %>% mutate(y = Quantity * UnitPrice, InvoiceDate=mdy_hm(InvoiceDate)) %>% select(InvoiceDate, y)
-
-df_mutated = df_mutated %>% rename(ds=InvoiceDate)
-df_mutated %>% head()
+df_raw = df_raw %>% rename(ds=Datetime)
+df_raw %>% head()
 ```
+
+
+## Slicing date from 2017
+```{r}
+slice = ymd_hm('2017-01-01 00:00')
+df_raw = df_raw %>% 
+  filter(ds >= slice)
+```
+
 
 ## Detecting outliers using Z-score
-
 ```{r}
-z_scores <- abs((df_mutated$y-mean(df_mutated$y))/sd(df_mutated$y))
+z_scores <- abs((df_raw$AEP_MW-mean(df_raw$AEP_MW))/sd(df_raw$AEP_MW))
 ```
 
 
 ```{r}
 no_outliers = z_scores < 3
 
-df = df_mutated %>% filter(no_outliers)
-length(df_mutated$y) - length(df$y)
-```
-
-## Subsetting dataframe to analyse observations starting from 2011-10
-
-```{r}
-slice = ymd_hm('2011-10-01 00:00')
-
-df = df %>% 
-  filter(ds > slice) %>% 
-  mutate(h = strptime(ds, '%Y-%m-%d %H:%M')) %>% 
-  select(h, y) %>% 
-  group_by(h) %>% 
-  summarise(y = sum(y)) %>% 
-  mutate(h = as.character(h)) %>% 
-  rename(ds = h)
-
-nrow(df)
+df = df_raw %>% filter(no_outliers)
+length(df_raw$AEP_MW) - length(df$AEP_MW)
 ```
 
 
-## General sales
 
 ```{r}
 df %>% 
-  mutate(response=y, day=ymd_hms(ds)) %>% 
-  ggplot(aes(x=day, y=response)) + 
-  geom_line(aes(color=response)) + 
-  labs(title='General Sales', x='Date', y='Sale', color='Sale') +
+  mutate(hour=hour(ds)) %>% 
+  group_by(hour) %>% 
+  summarise(
+    avg_consump = mean(AEP_MW, na.rm=T),
+    n = n()
+  ) %>% 
+  ggplot(aes(x=hour, y=avg_consump)) + 
+  geom_line() +
+  labs(title='Average energy consumption over hours of year') +
+  theme_minimal()
+```
+
+```{r}
+df %>% 
+  mutate(day=day(ds)) %>% 
+  group_by(day) %>% 
+  summarise(
+    avg_consump = mean(AEP_MW, na.rm=T),
+    n = n()
+  ) %>% 
+  ggplot(aes(x=day, y=avg_consump)) + 
+  geom_line() +
+  labs(title='Average energy consumption over days of year') +
+  theme_minimal()
+```
+
+```{r}
+df %>% 
+  mutate(month=month(ds)) %>% 
+  group_by(month) %>% 
+  summarise(
+    avg_consump = mean(AEP_MW, na.rm=T),
+    n = n()
+  ) %>% 
+  ggplot(aes(x=month, y=avg_consump)) + 
+  geom_line() +
+  labs(title='Average energy consumption over months of year') +
+  theme_minimal()
+```
+
+
+```{r}
+df %>% 
+  ggplot(aes(x=date(ds), y=AEP_MW)) + 
+  geom_line() +
+  scale_x_date(date_labels = "%d %b %Y") +
+  labs(y='total mw', x='date', title='Total MW over time by hour') +
+  theme_minimal()
+```
+
+
+```{r}
+df %>% 
+  mutate(ds = date(ds)) %>% 
+  group_by(ds) %>% 
+  summarise(
+    total_mw = sum(AEP_MW)
+  ) %>% 
+  ggplot(aes(x=ds, y=total_mw)) + 
+  geom_line() +
+  scale_x_date(date_labels = "%d %b %Y") +
+  labs(y='total mw by day', x='date', title='Total MW over time by day') +
+  theme_minimal()
+```
+
+
+```{r}
+df %>% 
+  mutate(ds = make_date(year(ds), month(ds))) %>% 
+  group_by(ds) %>% 
+  summarise(
+    total_mw = sum(AEP_MW)
+  ) %>% 
+  ggplot(aes(x=ds, y=total_mw)) + 
+  geom_line() +
+  scale_x_date(date_labels = "%b %Y") +
+  labs(y='total mw', x='date', title='Total MW over time by month') +
+  theme_minimal()
+```
+
+
+## Normalization
+```{r}
+df_normalized = df %>% 
+  mutate(
+    norm = (AEP_MW - mean(AEP_MW, na.rm = T)) / sd(AEP_MW, na.rm = T)
+  )
+
+df_normalized %>% 
+  ggplot(aes(x=date(ds), y=norm)) + 
+  geom_line() +
+  scale_x_date(date_labels = "%d %b %Y") +
+  labs(y='Norm MW', x='date', title='Total MW over time') +
+  theme_minimal()
+```
+
+
+
+## Rename AEP_MW to y as convention for Prophet
+```{r}
+df_training_set = df_normalized %>% rename(y=norm)
+```
+
+
+
+## Subsetting dataframe to analyse observations starting from 2011-10 until 2018-06
+```{r}
+slice = ymd_hm('2018-06-01 00:00')
+
+df_train = df_training_set %>% 
+  filter(ds < slice) %>%
+  group_by(ds) %>% 
+  summarise(y = sum(y))
+
+df_test = df_training_set %>% 
+  filter(ds >= slice) %>%
+  group_by(ds) %>% 
+  summarise(y = sum(y))
+
+nrow(df_train); nrow(df_test)
+```
+
+
+```{r}
+df_train %>% tail(); df_test %>% head()
+```
+
+
+
+## General train Mw
+```{r}
+df_train %>% 
+  ggplot(aes(x=date(ds), y=y)) + 
+  geom_line(aes(color=y)) + 
+  scale_x_date(date_labels = "%d %b %Y") +
+  labs(title='General train Mw', x='Date', y='Energy Consumption', color='Megawatt') +
+  theme_minimal()
+```
+
+
+## General test Mw
+```{r}
+df_test %>% 
+  ggplot(aes(x=date(ds), y=y)) + 
+  geom_line(aes(color=y)) + 
+  scale_x_date(date_labels = "%d %b %Y") +
+  labs(title='General test Mw', x='Date', y='Energy Consumption', color='Megawatt') +
   theme_minimal()
 ```
 
 
 ## Model creation
-
 ```{r}
-m = prophet(df, changepoint.prior.scale = 0.01)
+model = prophet(df_train, changepoint.prior.scale = 0.01)
 
-future = make_future_dataframe(m, periods=300, freq = 60*60)
+freq_hour = 60*60
+periods_hour = 24
 
-forecast = predict(m, future)
-tail(forecast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')])
-plot(m, forecast)
+future = make_future_dataframe(model, periods=periods_hour, freq = freq_hour)
+
+future %>% tail(periods_hour)
 ```
 
 
 
 ```{r}
-prophet_plot_components(m, forecast)
+forecast = predict(model, future)
+forecast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')] %>% tail(periods_hour)
+```
+
+
+```{r}
+plot(model, forecast)
+```
+
+
+```{r}
+prophet_plot_components(model, forecast)
+```
+
+
+## Save model
+```{r}
+model_path = "./model/model_2017_2018_norm.RDS"
+
+saveRDS(model, file=model_path)
+
+saved_model = readRDS(file=model_path)
+```
+
+
+```{r}
+slice = ymd_hm('2018-06-01 24:00')
+df_y = df_test %>% filter(ds < slice)
+df_y
+```
+
+
+```{r}
+df_yhat = forecast[c('ds', 'yhat')] %>% tail(periods_hour)
+df_yhat
+```
+
+
+```{r}
+df_result = tibble(
+  ds=df_y$ds,
+  actual=df_y$y,
+  predicted=df_yhat$yhat,
+  resid=df_y$y-df_yhat$yhat
+)
+
+mean(df_result$resid^2)
+```
+
+
+```{r}
+df_result %>% 
+  gather(key = "variable", value = "value", -ds) %>% 
+  ggplot(aes(x=ds, y=value)) + 
+  geom_line(aes(color = variable, linetype = variable)) + 
+  scale_linetype_manual(values=c('solid', 'solid', 'dashed'))+
+  scale_color_manual(values = c("blue", "green", "red")) +
+  labs(title = "Energy consumption 24 hour in the future", y="norm(EMW)", x="date") +
+  theme_minimal()
 ```
 
 
 ## Interactive graph
 ```{r}
-#dyplot.prophet(m, forecast)
-```
-
-# Monthly time series forecasting
-
-## Loading data
-
-```{r}
-df_raw = read_csv('../../data/example_retail_sales.csv')
-df_raw %>% head()
-```
-
-## Model creation
-
-```{r}
-m = prophet(df_raw, seasonality.mode = 'multiplicative')
-
-n_10_years = 3652
-future = make_future_dataframe(m, periods=n_10_years)
-
-forecast = predict(m, future)
-
-plot(m, forecast)
-```
-
-
-## Interactive graph
-```{r}
-#dyplot.prophet(m, forecast)
+#dyplot.prophet(model, forecast)
 ```
 
 

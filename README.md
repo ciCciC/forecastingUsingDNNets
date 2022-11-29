@@ -13,16 +13,14 @@
     - Recurrent Neural Network with Long-Short Term Memory (RNN-LSTM)
   - Evaluation
     - [Validation and Test Mean Absolute Error (MAE)](https://github.com/ciCciC/forecastingUsingDNNets/blob/main/notebooks/comparison.png)
-- [Prophet (Meta)](https://github.com/ciCciC/forecastingUsingDNNets/blob/main/notebooks/r/v2.Rmd)
-- [Neural Prophet](https://github.com/ciCciC/forecastingUsingDNNets/blob/main/notebooks/neural_prophet.ipynb)
+- [Prophet (Meta)](https://github.com/ciCciC/forecastingUsingDNNets/blob/main/notebooks/r)
 
+
+# Evaluation
+<img src="./notebooks/comparison.png" height=300>
 
 # Prerequisite
-- pip install jupyter
-- pip install numpy pandas matplotlib seaborn
-- conda install geopandas
-- pip install scikit-learn
-- conda install prophet
-- pip install neuralprophet
+- pip install numpy pandas matplotlib seaborn scikit-learn neuralprophet jupyter
+- conda install geopandas prophet
 
 - Tensorflow M1 -> https://developer.apple.com/metal/tensorflow-plugin
